@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENT 211 Quiz Portal | THE PHENOMENON</title>
+    <style>
+        /* Animated Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #quiz-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .hidden { display: none; }
+
+        .btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background: #34495e;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: white;
+            color: #333;
+            border: 2px solid #ddd;
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .correct { background: #27ae60 !important; color: white; border-color: #2ecc71; }
+        .wrong { background: #e74c3c !important; color: white; border-color: #c0392b; }
+
+        #progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.4s ease-in-out;
+        }
+
+        h1 { color: #2c3e50; margin-bottom: 5px; }
+        .subtitle { color: #7f8c8d; font-size: 0.9em; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div id="setup-screen">
+        <h1>ENT 211 QUIZ</h1>
+        <p class="subtitle">Created by <strong>THE PHENOMENON</strong></p>
+        <h3>Choose Your Difficulty Level:</h3>
+        <button class="btn" style="background:#27ae60" onclick="startQuiz('easy')">Easy (Foundation)</button>
+        <button class="btn" style="background:#f39c12" onclick="startQuiz('difficult')">Difficult (Intermediate)</button>
+        <button class="btn" style="background:#c0392b" onclick="startQuiz('professional')">Professional (Expert)</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div id="progress-bar"><div id="progress-fill"></div></div>
+        <p id="question-count" style="font-size: 0.8em; color: #666;"></p>
+        <h2 id="question-text" style="margin-bottom: 25px;"></h2>
+        <div id="options-container"></div>
+        <div id="feedback-area" style="margin-top: 15px; min-height: 30px; font-weight: bold;"></div>
+        <button id="next-btn" class="btn hidden" style="background:#3498db" onclick="nextQuestion()">Next Slide →</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h2>Assessment Complete!</h2>
+        <h1 id="final-score" style="font-size: 3em; color: #27ae60;"></h1>
+        <p id="performance-comment"></p>
+        <button class="btn" onclick="location.reload()">Take Another Level</button>
+    </div>
+</div>
+
+<script>
+    // Database Structure for 100 questions (Samples provided for each level)
+    const questionData = {
+        easy: [
+            { q: "The term 'Creative Destruction' is associated with:", a: ["Peter Drucker", "Joseph Schumpeter", "Bill Gates", "Aliko Dangote"], c: 1 },
+            { q: "What is the acronym CAC in business registration?", a: ["Central Account Corp", "Corporate Affairs Commission", "Capital Alliance Center", "Company Agency Council"], c: 1 },
+            { q: "An entrepreneur within a large organization is a/an:", a: ["Extrapreneur", "Intrapreneur", "Manager", "CEO"], c: 1 }
+            // Add up to 33-34 questions here
+        ],
+        difficult: [
+            { q: "In Knowledge Management, 'Explicit Knowledge' is:", a: ["Personal intuition", "Easily documented and shared", "Hidden talent", "Cultural norms"], c: 1 },
+            { q: "Which CAMA version allowed a single person to form a company?", a: ["1990", "2004", "2020", "2022"], c: 2 },
+            { q: "The formula E = f(e, i, o) represents:", a: ["Economy", "Entrepreneurship", "Electronics", "Efficiency"], c: 1 }
+            // Add up to 33-34 questions here
+        ],
+        professional: [
+            { q: "Which SECI model process converts Explicit to Tacit knowledge?", a: ["Externalization", "Socialization", "Internalization", "Combination"], c: 2 },
+            { q: "Relational Capital refers to value derived from:", a: ["Software systems", "Machinery", "Customer/Supplier networks", "Patents"], c: 2 },
+            { q: "Kurt Lewin's final stage of change management is:", a: ["Unfreezing", "Moving", "Refreezing", "Thawing"], c: 2 }
+            // Add up to 33-34 questions here
+        ]
+    };
+
+    let quizSet = [];
+    let currentIdx = 0;
+    let userScore = 0;
+
+    function startQuiz(level) {
+        quizSet = questionData[level];
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const item = quizSet[currentIdx];
+        document.getElementById('question-count').innerText = `Progress: ${currentIdx + 1} / ${quizSet.length}`;
+        document.getElementById('question-text').innerText = item.q;
+        document.getElementById('feedback-area').innerText = "";
+        document.getElementById('next-btn').classList.add('hidden');
+
+        const optionsDiv = document.getElementById('options-container');
+        optionsDiv.innerHTML = "";
+
+        item.a.forEach((opt, index) => {
+            const b = document.createElement('button');
+            b.innerText = opt;
+            b.className = 'option-btn';
+            b.onclick = () => validate(index, b);
+            optionsDiv.appendChild(b);
+        });
+
+        const progress = ((currentIdx) / quizSet.length) * 100;
+        document.getElementById('progress-fill').style.width = progress + "%";
+    }
+
+    function validate(choice, btn) {
+        const correct = quizSet[currentIdx].c;
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
+
+        if (choice === correct) {
+            btn.classList.add('correct');
+            document.getElementById('feedback-area').innerText = "EXCELLENT! Correct.";
+            document.getElementById('feedback-area').style.color = "#27ae60";
+            userScore++;
+        } else {
+            btn.classList.add('wrong');
+            btns[correct].classList.add('correct');
+            document.getElementById('feedback-area').innerText = "INCORRECT. The right answer is highlighted.";
+            document.getElementById('feedback-area').style.color = "#e74c3c";
+        }
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < quizSet.length) {
+            loadQuestion();
+        } else {
+            finish();
+        }
+    }
+
+    function finish() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        const percent = Math.round((userScore / quizSet.length) * 100);
+        document.getElementById('final-score').innerText = `${percent}%`;
+        
+        let msg = "";
+        if (percent >= 70) msg = "You are a Master of ENT 211!";
+        else if (percent >= 40) msg = "Good effort, but review your course files.";
+        else msg = "Professor recommends intensive study.";
+        
+        document.getElementById('performance-comment').innerText = msg;
+    }
+</script>
+</body>
+</html>
