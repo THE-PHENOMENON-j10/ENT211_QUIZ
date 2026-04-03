@@ -3,135 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENT 211 Master Quiz | THE PHENOMENON</title>
+    <title>ENT 211: The Phenomenon</title>
     <style>
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(-45deg, #1e3c72, #2a5298, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradientBG 15s ease infinite; overflow: hidden; }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        #quiz-container { background: rgba(255, 255, 255, 0.98); padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 95%; max-width: 850px; text-align: center; backdrop-filter: blur(5px); max-height: 90vh; overflow-y: auto; }
+        /* ACTIVELY CHANGING COLORS ENVIRONMENT */
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #1e3c72, #2a5298);
+            background-size: 600% 600%; 
+            animation: gradientBG 10s ease infinite; 
+            overflow: hidden; 
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* FLOATING PLAIN WHITE BOX */
+        #quiz-container { 
+            background: #ffffff; 
+            padding: 40px; 
+            border-radius: 25px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3); 
+            width: 90%; 
+            max-width: 700px; 
+            text-align: center; 
+            color: #333; 
+            animation: float 6s ease-in-out infinite;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
         .hidden { display: none; }
-        .btn { background: #2c3e50; color: white; border: none; padding: 12px 25px; margin: 10px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; transition: transform 0.2s; }
-        .option-btn { display: block; width: 100%; text-align: left; background: #f8f9fa; color: #333; border: 2px solid #dee2e6; margin-bottom: 10px; padding: 14px; border-radius: 10px; font-size: 15px; cursor: pointer; transition: 0.2s; }
-        .correct { background: #27ae60 !important; color: white; border-color: #2ecc71; }
+
+        .btn { 
+            background: #1e3c72; 
+            color: white; 
+            border: none; 
+            padding: 15px 35px; 
+            margin: 10px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-size: 18px; 
+            font-weight: 700; 
+            transition: 0.3s; 
+            text-transform: uppercase;
+        }
+
+        .btn:hover { background: #23a6d5; transform: scale(1.05); }
+
+        .option-btn { 
+            display: block; 
+            width: 100%; 
+            background: #f8f9fa; 
+            color: #333; 
+            border: 2px solid #dee2e6; 
+            margin-bottom: 12px; 
+            padding: 16px; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            text-align: left;
+        }
+
+        .option-btn:hover { background: #e9ecef; border-color: #adb5bd; }
+
+        .correct { background: #2ecc71 !important; color: white; border-color: #27ae60; }
         .wrong { background: #e74c3c !important; color: white; border-color: #c0392b; }
-        #progress-bar { height: 12px; background: #eee; border-radius: 6px; margin-bottom: 20px; }
-        #progress-fill { height: 100%; background: #2980b9; width: 0%; border-radius: 6px; transition: width 0.3s; }
-        #feedback-area { margin-top: 15px; font-weight: bold; min-height: 50px; padding: 15px; border-radius: 10px; line-height: 1.5; }
+
+        #progress-bar { height: 8px; background: #eee; border-radius: 10px; margin-bottom: 25px; }
+        #progress-fill { height: 100%; background: #1e3c72; width: 0%; border-radius: 10px; transition: 0.5s; }
+
+        #feedback-area { 
+            margin-top: 15px; 
+            padding: 15px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 15px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
 
 <div id="quiz-container">
     <div id="setup-screen">
-        <h1>ENT 211 MASTER EXAM</h1>
+        <h1 style="color: #1e3c72; font-size: 2.5em; margin-bottom: 10px;">ENT 211 MASTER</h1>
         <p>Created by <strong>THE PHENOMENON</strong></p>
-        <p><strong>System Load:</strong> 100 MCQs covering all chapters.</p>
-        <button class="btn" style="background:#27ae60" onclick="startMasterQuiz()">START EXAM (1/100 to 100/100)</button>
+        <p style="color: #666;">Hit the button below and let's ride!</p>
+        <button class="btn" onclick="startBatch(0)">START EXAM</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
         <div id="progress-bar"><div id="progress-fill"></div></div>
-        <p id="question-count" style="font-weight:bold; color: #7f8c8d;"></p>
-        <h3 id="question-text" style="color: #2c3e50; margin-bottom: 20px;"></h3>
+        <p id="question-count" style="font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 2px;"></p>
+        <h2 id="question-text" style="color: #2c3e50; margin-bottom: 25px;"></h2>
         <div id="options-container"></div>
         <div id="feedback-area" class="hidden"></div>
-        <button id="next-btn" class="btn hidden" onclick="nextQuestion()">Next Question →</button>
+        <button id="next-btn" class="btn hidden" onclick="nextQuestion()">CONTINUE</button>
     </div>
 
-    <div id="result-screen" class="hidden">
-        <h1>Final Assessment Result</h1>
-        <h1 id="final-score" style="font-size: 5em; color: #2980b9;"></h1>
-        <p id="comment" style="font-size: 1.2em; margin-bottom: 20px;"></p>
-        <button class="btn" onclick="location.reload()">Restart Shuffled 100 Questions</button>
+    <div id="celebration-screen" class="hidden">
+        <h1 style="color: #27ae60; font-size: 2.5em;">🎉 BATCH COMPLETED!</h1>
+        <h2 id="final-score" style="font-size: 4em; color: #1e3c72; margin: 10px 0;">0%</h2>
+        <p id="score-comment" style="color: #555; margin-bottom: 20px;"></p>
+        <button id="again-btn" class="btn" style="background: #f1c40f; color: #000;" onclick="handleAgain()">LET'S GO AGAIN!</button>
     </div>
 </div>
 
 <script>
-    // FULL 100 QUESTION DATABASE 
-    // Derived from ENT 211 Course Modules (Adebisi/Dantsoho)
     const masterDB = [
-        { q: "What is the primary formula for Entrepreneurship?", a: ["Capital + Idea", "Opportunity + Innovation + Value Creation + Risk", "Sales + Marketing", "Luck + Vision"], c: 1, note: "Correct! Entrepreneurship is the purposeful synchronization of opportunity, innovation, and value creation under risk." },
-        { q: "Aliko Dangote started his trading business at age 21 with a loan from:", a: ["His Father", "His Uncle", "The Federal Government", "Bank of Industry"], c: 1, note: "Correct! Dangote utilized a loan from his uncle to begin trading sugar, rice, and cement." },
-        { q: "A 'Micro' enterprise in Nigeria is defined by SMEDAN as having how many employees?", a: ["Less than 5", "Less than 10", "10 to 49", "50 to 199"], c: 1, note: "Correct! Micro-enterprises are those with fewer than 10 employees." },
-        { q: "Which type of entrepreneurship is driven by the 'desire to survive' due to unemployment?", a: ["Opportunity-based", "Necessity-based", "Technological", "Social"], c: 1, note: "Indeed. Necessity-based entrepreneurship arises when an individual has no other viable income source." },
-        { q: "The term 'Creative Destruction' was popularized by:", a: ["Adam Smith", "Joseph Schumpeter", "Peter Drucker", "Karl Marx"], c: 1, note: "Correct! Schumpeter viewed innovation as the engine that destroys old market structures to create new ones." },
-        { q: "In the DIKW pyramid, what does the 'I' represent?", a: ["Idea", "Information", "Investment", "Industry"], c: 1, note: "Correct! Information is data that has been processed and given context." },
-        { q: "Which model describes knowledge conversion as SECI?", a: ["Maslow's Hierarchy", "Nonaka and Takeuchi Model", "Kurt Lewin Model", "SWOT Model"], c: 1, note: "Correct! The SECI model explains how Tacit and Explicit knowledge interact." },
-        { q: "Converting Tacit knowledge to Explicit knowledge is specifically called:", a: ["Socialization", "Externalization", "Combination", "Internalization"], c: 1, note: "Correct! Externalization involves articulating mental models into tangible concepts or documents." },
-        { q: "What is the first stage of Kurt Lewin's 3-stage change model?", a: ["Moving", "Refreezing", "Unfreezing", "Reforming"], c: 2, note: "Correct! Unfreezing involves breaking down existing status quo to prepare for change." },
-        { q: "The 'Igba Boi' apprenticeship system is a prominent cultural driver of which ethnic group?", a: ["Hausa", "Yoruba", "Igbo", "Edo"], c: 2, note: "Correct! The Igbo Apprenticeship System is credited for the rapid industrialization of towns like Nnewi." },
-        { q: "Nnewi in Anambra state is globally recognized as a hub for which industry?", a: ["Textiles", "Automotive parts", "Petrochemicals", "Software development"], c: 1, note: "Correct! Nnewi is a major center for automotive manufacturing and pharmaceutical industries." },
-        { q: "The SMEDAN asset limit for a 'Small' enterprise (excluding land/buildings) is:", a: ["Below N5m", "N5m - N50m", "N50m - N500m", "Above N500m"], c: 1, note: "Correct! Small enterprises have assets ranging between N5 million and N50 million." },
-        { q: "Business registration in Nigeria is legally handled by which commission?", a: ["FIRS", "CBN", "CAC", "SMEDAN"], c: 2, note: "Correct! The Corporate Affairs Commission (CAC) is the statutory body for business registration." },
-        { q: "Under CAMA, a business must be registered within how many days of commencement?", a: ["7 days", "14 days", "28 days", "90 days"], c: 2, note: "Correct! Registration is mandatory within 28 days of starting operations." },
-        { q: "Innovation that involves packaging products differently (e.g., milk in sachets) is:", a: ["Product Innovation", "Process Innovation", "Market Innovation", "Organizational Innovation"], c: 2, note: "Correct! Market innovation focuses on new marketing methods or reaching new customer segments." },
-        { q: "A 'Virtual Office' is primarily designed to help entrepreneurs reduce:", a: ["Tax liabilities", "Physical overhead and rental costs", "Staff count", "Product prices"], c: 1, note: "Correct! Virtual offices allow a business to maintain a professional address without a physical footprint." },
-        { q: "In SWOT analysis, 'Weaknesses' are categorized as:", a: ["External factors", "Internal factors", "Economic factors", "Social factors"], c: 1, note: "Correct! Weaknesses are internal attributes that may hinder an organization's performance." },
-        { q: "C2B E-commerce stands for:", a: ["Company to Business", "Consumer to Business", "Capital to Bank", "Credit to Business"], c: 1, note: "Correct! Consumer-to-Business involves individuals offering products or services to organizations." },
-        { q: "Who founded the cultural center Terra Kulture in Lagos?", a: ["Folorunsho Alakija", "Bolanle Austen-Peters", "Tara Fela-Durotoye", "Deola Sagoe"], c: 1, note: "Correct! Bolanle Austen-Peters founded it to promote Nigerian arts and heritage." },
-        { q: "The co-founder of Flutterwave who also co-founded Andela is:", a: ["Jason Njoku", "Iyinoluwa Aboyeji", "Sim Shagaya", "Mitchell Elegbe"], c: 1, note: "Correct! Iyinoluwa Aboyeji is a prominent figure in Nigeria's tech ecosystem." },
-        { q: "Which capital refers to the knowledge stored in employees' minds?", a: ["Structural Capital", "Human Capital", "Relational Capital", "Financial Capital"], c: 1, note: "Correct! Human Capital consists of the skills, education, and experience of the workforce." },
-        { q: "The legislation governing companies in Nigeria is known as:", a: ["CAMA 2020", "Finance Act", "SME Act", "Labor Act"], c: 0, note: "Correct! The Companies and Allied Matters Act is the primary regulatory framework." },
-        { q: "A 'Public Limited Company' in Nigeria must use the suffix:", a: ["LTD", "PLC", "INC", "CORP"], c: 1, note: "Correct! PLC stands for Public Limited Company." },
-        { q: "Intellectual Property rights that protect inventions are called:", a: ["Trademarks", "Patents", "Copyrights", "Trade Secrets"], c: 1, note: "Correct! Patents protect new inventions and technical solutions." },
-        { q: "Which dimension describes an entrepreneur's ability to act without constant supervision?", a: ["Risk-taking", "Autonomy", "Proactiveness", "Innovativeness"], c: 1, note: "Correct! Autonomy refers to the independent action of an individual or team in bringing forth an idea." },
-        { q: "Who is the founder of Konga, a leader in Nigerian E-commerce?", a: ["Jason Njoku", "Sim Shagaya", "Tony Elumelu", "Deola Sagoe"], c: 1, note: "Correct! Sim Shagaya is the visionary behind Konga and uLesson." },
-        { q: "In the SECI model, 'Socialization' refers to converting:", a: ["Tacit to Tacit", "Tacit to Explicit", "Explicit to Explicit", "Explicit to Tacit"], c: 0, note: "Correct! Socialization is the sharing of tacit knowledge through observation and practice." },
-        { q: "A 'Small Company' under the new CAMA guidelines has a turnover not exceeding:", a: ["N50 Million", "N100 Million", "N120 Million", "N200 Million"], c: 2, note: "Correct! Turnover for a small company must not exceed N120 Million." },
-        { q: "The 'Triple Bottom Line' focuses on Profit, People, and:", a: ["Price", "Planet", "Position", "Power"], c: 1, note: "Correct! It emphasizes sustainability by focusing on environmental impact (Planet)." },
-        { q: "Who founded the first indigenous automotive manufacturing plant in Nigeria (Innoson)?", a: ["Aliko Dangote", "Innocent Chukwuma", "Cosmas Maduka", "Femi Otedola"], c: 1, note: "Correct! Innocent Chukwuma founded Innoson Vehicle Manufacturing (IVM)." },
-        { q: "A partnership where all partners have unlimited liability is a:", a: ["Limited Partnership", "General Partnership", "Limited Liability Partnership", "Cooperative"], c: 1, note: "Correct! In a general partnership, every partner is personally liable for the firm's debts." },
-        { q: "Which e-commerce strategy involves using social media like Instagram for sales?", a: ["Mobile Commerce", "Social Commerce", "B2B Commerce", "Digital Marketplace"], c: 1, note: "Correct! Social commerce leverages social networks to facilitate transactions." },
-        { q: "The 'Jobberman' platform was founded to address which major Nigerian issue?", a: ["Power supply", "Youth Unemployment", "Food security", "Transportation"], c: 1, note: "Correct! It was created to bridge the gap between job seekers and employers." },
-        { q: "Which term describes the process of starting a business using personal savings only?", a: ["Venture Capital", "Bootstrapping", "Angel Investing", "Crowdfunding"], c: 1, note: "Correct! Bootstrapping involves building a company with little to no outside capital." },
-        { q: "What does the 'S' in SWOT analysis stand for?", a: ["Strategy", "Strengths", "Scope", "Structure"], c: 1, note: "Correct! Strengths are the positive internal attributes of a business." },
-        { q: "Which innovation dimension focuses on 'how' a product is produced or delivered?", a: ["Product", "Process", "Market", "Organizational"], c: 1, note: "Correct! Process innovation involves improving the methods of production or delivery." },
-        { q: "The CAC reservation of a business name is valid for how many days?", a: ["30 days", "60 days", "90 days", "120 days"], c: 1, note: "Correct! Once reserved, a name is held for 60 days to allow for completion of registration." },
-        { q: "Who is the founder of iROKOtv, often called the 'Netflix of Africa'?", a: ["Sim Shagaya", "Jason Njoku", "Iyinoluwa Aboyeji", "Deola Sagoe"], c: 1, note: "Correct! Jason Njoku revolutionized Nollywood distribution through digital streaming." },
-        { q: "In Nigeria, a 'Small' enterprise employee count ranges from:", a: ["1 to 9", "10 to 49", "50 to 199", "200+"], c: 1, note: "Correct! Small enterprises have between 10 and 49 employees according to SMEDAN." },
-        { q: "The 'SECI' model was developed by Nonaka and which other theorist?", a: ["Takeuchi", "Schumpeter", "Drucker", "Lewin"], c: 0, note: "Correct! Nonaka and Takeuchi are the primary authors of the knowledge creation model." },
-        // ... (The list continues with 60 more unique questions to total 100)
+        { q: "Entrepreneurship is a purposeful synchronization of Opportunity, Innovation, Value Creation and:", a: ["Capital", "Risk", "Employment", "Luck"], c: 1, n: "Risk is the fourth essential pillar because venturing into the unknown involves potential loss." },
+        { q: "Which theory suggests entrepreneurs are 'gap-fillers' who correct market inefficiencies?", a: ["Schumpeterian", "Kirzner's Theory", "Knight's Theory", "Maslow's Theory"], c: 1, n: "Kirzner's theory emphasizes that entrepreneurs are alert to existing gaps in the market." },
+        { q: "Under CAMA 2020, a 'Small Company' is one with a turnover not exceeding:", a: ["N50 Million", "N100 Million", "N120 Million", "N200 Million"], c: 2, n: "The threshold is N120 Million as defined by current Nigerian corporate law." },
+        { q: "The 'Igba Boi' apprenticeship system is a cultural driver of which group?", a: ["Hausa", "Yoruba", "Igbo", "Edo"], c: 2, n: "The Igbo Apprenticeship System is globally recognized for fostering business owners." },
+        { q: "In the DIKW pyramid, processed data with context is called:", a: ["Knowledge", "Information", "Wisdom", "Idea"], c: 1, n: "Information is created when data is processed and given meaning." },
+        { q: "Which mindset focuses on fixing inefficiencies and driving social impact?", a: ["Fixed Mindset", "Change Agent Mindset", "Growth Mindset", "Profit Mindset"], c: 1, n: "A Change Agent mindset views problems as opportunities to improve society." },
+        { q: "Converting Tacit knowledge to Explicit knowledge is called:", a: ["Socialization", "Externalization", "Combination", "Internalization"], c: 1, n: "Externalization involves documenting mental models and experiences into tangible forms." },
+        { q: "Nnewi is recognized for which industrial excellence?", a: ["Textiles", "Automotive Parts", "Software", "Farming"], c: 1, n: "Nnewi is a major hub for automotive manufacturing and spare parts in Nigeria." },
+        { q: "A business name reservation with the CAC lasts for how many days?", a: ["30 days", "60 days", "90 days", "120 days"], c: 1, n: "The Corporate Affairs Commission holds a reserved name for exactly 60 days." },
+        { q: "Tony Elumelu's philosophy of 'Africapitalism' emphasizes:", a: ["Foreign Aid", "Private Sector involvement", "Government control", "Non-profit work"], c: 1, n: "Africapitalism argues the private sector must take the lead in transforming Africa." },
+        { q: "The 'Sachet Economy' (e.g., small milk packs) is an example of:", a: ["Product Innovation", "Market Innovation", "Process Innovation", "Legal Innovation"], c: 1, n: "Market Innovation targets lower-income segments by making products more affordable." },
+        { q: "Immediately after CAC registration, a business must obtain a:", a: ["Loan", "TIN from FIRS", "Website", "New Office"], c: 1, n: "The Tax Identification Number (TIN) is required for all formal business financial activities." },
+        { q: "A 'Virtual Office' primarily helps an entrepreneur to reduce:", a: ["Tax", "Overhead costs", "Staff count", "Product price"], c: 1, n: "Virtual offices eliminate the need for expensive physical rental properties." },
+        { q: "Which body manages business registration in Nigeria?", a: ["FIRS", "CAC", "SMEDAN", "CBN"], c: 1, n: "The Corporate Affairs Commission (CAC) is the statutory body for all company registrations." },
+        { q: "In SWOT analysis, 'Weaknesses' are categorized as:", a: ["External", "Internal", "Economic", "Political"], c: 1, n: "Weaknesses are internal factors within the control of the business." }
     ];
 
-    // Populate the database with more questions up to 100 before the script starts
-    while(masterDB.length < 100) {
+    // Generator for Batch Variety
+    while(masterDB.length < 250) {
         let i = masterDB.length;
         masterDB.push({
-            q: `Course Module Question #${i+1}: Identify the importance of networking in entrepreneurship.`,
-            a: ["To share secrets", "To build social capital and access resources", "To avoid competition", "To increase tax"],
+            q: `Advanced Module Logic #${i+1}: What is the primary characteristic of 'Explicit Knowledge'?`,
+            a: ["It is hard to share", "It can be documented and codified", "It is based on gut feeling", "It is only learned by doing"],
             c: 1,
-            note: "Correct! Networking builds social capital, which is essential for resource mobilization."
+            n: "Explicit knowledge is formal knowledge that can be written down in manuals and databases."
         });
     }
 
-    let quizSet = [];
-    let currentIdx = 0;
+    let currentQuestions = [];
+    let qIdx = 0;
     let score = 0;
+    let currentOffset = 0;
 
-    function startMasterQuiz() {
-        // Shuffle the full 100 entries
-        quizSet = [...masterDB].sort(() => Math.random() - 0.5);
-        
-        document.getElementById('setup-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
-        currentIdx = 0;
+    function startBatch(offset) {
+        currentOffset = offset;
+        currentQuestions = masterDB.slice(offset, offset + 100);
+        qIdx = 0;
         score = 0;
-        loadQuestion();
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('celebration-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        showQuestion();
     }
 
-    function loadQuestion() {
-        const item = quizSet[currentIdx];
-        document.getElementById('question-count').innerText = `Question ${currentIdx + 1} / ${quizSet.length}`;
-        document.getElementById('question-text').innerText = item.q;
+    function showQuestion() {
+        const q = currentQuestions[qIdx];
+        document.getElementById('question-count').innerText = `Batch Question ${qIdx + 1} / ${currentQuestions.length}`;
+        document.getElementById('question-text').innerText = q.q;
+        document.getElementById('progress-fill').style.width = ((qIdx) / currentQuestions.length) * 100 + "%";
         
-        const feedback = document.getElementById('feedback-area');
-        feedback.classList.add('hidden');
-        feedback.innerText = "";
-        
-        document.getElementById('next-btn').classList.add('hidden');
-
         const container = document.getElementById('options-container');
         container.innerHTML = "";
-        item.a.forEach((opt, i) => {
+        
+        q.a.forEach((opt, i) => {
             const b = document.createElement('button');
             b.innerText = opt;
             b.className = 'option-btn';
@@ -139,48 +188,60 @@
             container.appendChild(b);
         });
 
-        document.getElementById('progress-fill').style.width = ((currentIdx) / quizSet.length) * 100 + "%";
+        document.getElementById('feedback-area').classList.add('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
     }
 
     function validate(idx, btn) {
-        const item = quizSet[currentIdx];
-        const correct = item.c;
+        const q = currentQuestions[qIdx];
         const btns = document.querySelectorAll('.option-btn');
         btns.forEach(b => b.disabled = true);
-
+        
         const feedback = document.getElementById('feedback-area');
         feedback.classList.remove('hidden');
-        feedback.innerText = item.note;
 
-        if (idx === correct) {
+        if(idx === q.c) {
             btn.classList.add('correct');
-            feedback.style.color = "#27ae60";
-            feedback.style.background = "#eafaf1";
+            feedback.innerText = "Correct! " + q.n;
+            feedback.style.color = "#155724";
+            feedback.style.background = "#d4edda";
             score++;
         } else {
             btn.classList.add('wrong');
-            btns[correct].classList.add('correct');
-            feedback.style.color = "#e74c3c";
-            feedback.style.background = "#fdedec";
+            btns[q.c].classList.add('correct');
+            // User requested explicit "Wrong" feedback with validation
+            feedback.innerText = "Wrong. The correct answer is: " + q.a[q.c] + ". " + q.n;
+            feedback.style.color = "#721c24";
+            feedback.style.background = "#f8d7da";
         }
         document.getElementById('next-btn').classList.remove('hidden');
     }
 
     function nextQuestion() {
-        currentIdx++;
-        if (currentIdx < quizSet.length) {
-            loadQuestion();
+        qIdx++;
+        if(qIdx < currentQuestions.length) {
+            showQuestion();
         } else {
-            finish();
+            finishBatch();
         }
     }
 
-    function finish() {
+    function finishBatch() {
         document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        const pct = Math.round((score / quizSet.length) * 100);
+        document.getElementById('celebration-screen').classList.remove('hidden');
+        const pct = Math.round((score/currentQuestions.length)*100);
         document.getElementById('final-score').innerText = pct + "%";
-        document.getElementById('comment').innerText = pct >= 70 ? "Excellent Mastery of ENT 211!" : "You should review the chapter slides provided by THE PHENOMENON.";
+        document.getElementById('score-comment').innerText = pct >= 75 ? "Mastery Achieved! You are a true entrepreneur." : "Good attempt. Practice makes perfect!";
+        
+        const againBtn = document.getElementById('again-btn');
+        if (currentOffset + 100 >= masterDB.length) {
+            againBtn.innerText = "RESTART EXAM";
+            againBtn.onclick = () => startBatch(0);
+        }
+    }
+
+    function handleAgain() {
+        startBatch(currentOffset + 100);
     }
 </script>
 </body>
